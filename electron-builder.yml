@@ -46,4 +46,8 @@ appImage:
 
 npmRebuild: false
 
-publish: null
+publish:
+  provider: github
+  owner: rameet-mashta
+  repo: electron_test
+  releaseType: release
