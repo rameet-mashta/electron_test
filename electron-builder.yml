@@ -1,0 +1,49 @@
+appId: com.electron.app
+productName: electron_test
+
+directories:
+  buildResources: build
+  output: dist
+
+files:
+  - out/**/*
+
+asarUnpack:
+  - resources/**
+
+win:
+  executableName: electron_test
+  signtoolOptions:
+    certificateFile: C:/cert.pfx
+    certificatePassword: rockman
+  signAndEditExecutable: true
+  target:
+    - nsis
+
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+
+mac:
+  icon: build/icon.icns
+  entitlementsInherit: build/entitlements.mac.plist
+  hardenedRuntime: false
+  notarize: false
+
+dmg:
+  artifactName: ${name}-${version}.${ext}
+
+linux:
+  icon: build/icon.png
+  target:
+    - AppImage
+    - deb
+
+appImage:
+  artifactName: ${name}-${version}.${ext}
+
+npmRebuild: false
+
+publish: null
