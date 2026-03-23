@@ -13,9 +13,6 @@ asarUnpack:
 
 win:
   executableName: electron_test
-  signtoolOptions:
-    certificateFile: C:/cert.pfx
-    certificatePassword: rockman
   signAndEditExecutable: true
   target:
     - nsis
