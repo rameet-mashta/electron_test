@@ -17,7 +17,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && dotenv -- electron-builder --win --config electron-builder.yml",
-    "publish": "npm run build && dotenv -- electron-builder --win --publish onTagOrDraft --config electron-builder.yml"
+    "publish": "npm run build && dotenv -- electron-builder --win --publish always --config electron-builder.yml"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
