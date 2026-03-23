@@ -28,4 +28,4 @@ jobs:
       - name: Publish
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run build && electron-builder --win --publish always --config electron-builder.yml
+        run: npm run build && npx electron-builder --win --publish always --config electron-builder.yml
