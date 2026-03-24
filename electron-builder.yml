@@ -49,6 +49,7 @@ publish:
     region: blr1
     endpoint: https://blr1.digitaloceanspaces.com
     acl: public-read
+    path: rameet-mashta/releases/${version}
   - provider: github
     owner: rameet-mashta
     repo: electron_test
