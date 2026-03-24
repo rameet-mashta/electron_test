@@ -205,6 +205,42 @@ code {
   min-height: 18px;
 }
 
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.app-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ev-c-text-1);
+}
+
+.app-version {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ev-c-text-2);
+  background: var(--color-background-mute);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ev-c-gray-1);
+  vertical-align: middle;
+  margin-right: 2px;
+  transition: background 0.3s;
+}
+
+.status-dot.status-ok  { background: #4caf50; }
+.status-dot.status-err { background: #f44336; }
+
 @media (max-width: 620px) {
   .versions {
     display: none;

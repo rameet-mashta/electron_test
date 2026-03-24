@@ -4,11 +4,24 @@ function init(): void {
   })
 }
 
-function doAThing(): void {
+async function doAThing(): Promise<void> {
   const versions = window.electron.process.versions
   replaceText('.electron-version', `Electron v${versions.electron}`)
   replaceText('.chrome-version', `Chromium v${versions.chrome}`)
   replaceText('.node-version', `Node v${versions.node}`)
+  replaceText('.app-version', `v${versions.app ?? ''}`)
+
+  // Brief flash to show DB connection is live
+  const statusDot = document.querySelector<HTMLElement>('.status-dot')
+  const statusText = document.querySelector<HTMLElement>('.status-text')
+  try {
+    await window.electron.ipcRenderer.invoke('db:get', '__ping__')
+    if (statusDot) statusDot.classList.add('status-ok')
+    if (statusText) statusText.textContent = 'DB connected'
+  } catch {
+    if (statusDot) statusDot.classList.add('status-err')
+    if (statusText) statusText.textContent = 'DB error'
+  }
 
   const ipcHandlerBtn = document.getElementById('ipcHandler')
   ipcHandlerBtn?.addEventListener('click', () => {
