@@ -1,38 +1,27 @@
+type UpdaterStatus = { event: string; data?: unknown }
+
 function init(): void {
   window.addEventListener('DOMContentLoaded', () => {
-    doAThing()
+    setup()
   })
 }
 
-async function doAThing(): Promise<void> {
+async function setup(): Promise<void> {
+  // App version
   const versions = window.electron.process.versions
-  replaceText('.electron-version', `Electron v${versions.electron}`)
-  replaceText('.chrome-version', `Chromium v${versions.chrome}`)
-  replaceText('.node-version', `Node v${versions.node}`)
-  replaceText('.app-version', `v${versions.app ?? ''}`)
+  setText('.app-version', `v${versions.app ?? ''}`)
 
-  // Brief flash to show DB connection is live
-  const statusDot = document.querySelector<HTMLElement>('.status-dot')
-  const statusText = document.querySelector<HTMLElement>('.status-text')
-  try {
-    await window.electron.ipcRenderer.invoke('db:get', '__ping__')
-    if (statusDot) statusDot.classList.add('status-ok')
-    if (statusText) statusText.textContent = 'DB connected'
-  } catch {
-    if (statusDot) statusDot.classList.add('status-err')
-    if (statusText) statusText.textContent = 'DB error'
-  }
+  // Updater: get current state then listen for live pushes
+  const initial: UpdaterStatus = await window.electron.ipcRenderer.invoke('updater:status')
+  applyUpdaterStatus(initial)
+  window.electron.ipcRenderer.on('updater:status', (_e, status: UpdaterStatus) =>
+    applyUpdaterStatus(status)
+  )
 
-  const ipcHandlerBtn = document.getElementById('ipcHandler')
-  ipcHandlerBtn?.addEventListener('click', () => {
-    window.electron.ipcRenderer.send('ping')
-  })
-
-  const dbSetBtn = document.getElementById('db-set')
-  const dbGetBtn = document.getElementById('db-get')
+  // DB
   const dbResult = document.getElementById('db-result')
 
-  dbSetBtn?.addEventListener('click', async () => {
+  document.getElementById('db-set')?.addEventListener('click', async () => {
     const key = (document.getElementById('db-key') as HTMLInputElement).value.trim()
     const value = (document.getElementById('db-value') as HTMLInputElement).value.trim()
     if (!key) return
@@ -40,19 +29,86 @@ async function doAThing(): Promise<void> {
     if (dbResult) dbResult.textContent = `Saved "${key}" = "${value}"`
   })
 
-  dbGetBtn?.addEventListener('click', async () => {
+  document.getElementById('db-get')?.addEventListener('click', async () => {
     const key = (document.getElementById('db-key') as HTMLInputElement).value.trim()
     if (!key) return
     const row = await window.electron.ipcRenderer.invoke('db:get', key)
-    if (dbResult) dbResult.textContent = row ? `"${key}" = "${row.value}"` : `No entry found for "${key}"`
+    if (dbResult)
+      dbResult.textContent = row ? `"${key}" = "${row.value}"` : `No entry for "${key}"`
   })
 }
 
-function replaceText(selector: string, text: string): void {
-  const element = document.querySelector<HTMLElement>(selector)
-  if (element) {
-    element.innerText = text
+function applyUpdaterStatus(status: UpdaterStatus): void {
+  const icon = document.querySelector<HTMLElement>('.update-icon')
+  const msg = document.querySelector<HTMLElement>('.update-message')
+  const progressEl = document.querySelector<HTMLElement>('.update-progress')
+  const fill = document.querySelector<HTMLElement>('.update-fill')
+  const pct = document.querySelector<HTMLElement>('.update-percent')
+
+  if (!icon || !msg) return
+
+  const spin = (on: boolean): void => { icon.classList.toggle('spinning', on) }
+  const showProgress = (on: boolean): void => {
+    if (progressEl) progressEl.hidden = !on
+  }
+
+  switch (status.event) {
+    case 'checking':
+      spin(true)
+      showProgress(false)
+      icon.textContent = '\u27F3'
+      msg.textContent = 'Checking for updates\u2026'
+      break
+    case 'available':
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\u2B07'
+      msg.textContent = `Update available: v${status.data} \u2014 downloading\u2026`
+      break
+    case 'not-available':
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\u2713'
+      msg.textContent = 'You\u2019re up to date'
+      break
+    case 'progress':
+      spin(false)
+      showProgress(true)
+      icon.textContent = '\u2B07'
+      msg.textContent = 'Downloading update\u2026'
+      if (fill) fill.style.width = `${status.data}%`
+      if (pct) pct.textContent = `${status.data}%`
+      break
+    case 'downloaded':
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\u2713'
+      msg.textContent = `v${status.data} ready \u2014 will install on next restart`
+      break
+    case 'error':
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\u2715'
+      msg.textContent = `Update error: ${status.data}`
+      break
+    case 'dev':
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\uD83D\uDEE0'
+      msg.textContent = 'Dev mode \u2014 auto-update disabled'
+      break
+    default:
+      spin(false)
+      showProgress(false)
+      icon.textContent = '\u27F3'
+      msg.textContent = 'Checking for updates\u2026'
   }
 }
 
+function setText(selector: string, text: string): void {
+  const el = document.querySelector<HTMLElement>(selector)
+  if (el) el.textContent = text
+}
+
 init()
+
