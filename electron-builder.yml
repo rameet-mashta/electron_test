@@ -44,7 +44,12 @@ appImage:
 npmRebuild: false
 
 publish:
-  provider: github
-  owner: rameet-mashta
-  repo: electron_test
-  releaseType: release
+  - provider: s3
+    bucket: test-bucket-electron
+    region: blr1
+    endpoint: https://blr1.digitaloceanspaces.com
+    acl: public-read
+  - provider: github
+    owner: rameet-mashta
+    repo: electron_test
+    releaseType: release
