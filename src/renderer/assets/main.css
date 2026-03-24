@@ -149,6 +149,62 @@ code {
   }
 }
 
+.db-section {
+  margin-top: 28px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background-color: var(--color-background-mute);
+  width: 100%;
+  max-width: 480px;
+}
+
+.db-section h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--ev-c-text-1);
+}
+
+.db-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.db-row input {
+  flex: 1;
+  min-width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--ev-c-gray-1);
+  background: var(--color-background-soft);
+  color: var(--ev-c-text-1);
+  font-size: 13px;
+}
+
+.db-row button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--ev-button-alt-border);
+  background: var(--ev-button-alt-bg);
+  color: var(--ev-button-alt-text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.db-row button:hover {
+  background: var(--ev-button-alt-hover-bg);
+  border-color: var(--ev-button-alt-hover-border);
+  color: var(--ev-button-alt-hover-text);
+}
+
+.db-result {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ev-c-text-2);
+  min-height: 18px;
+}
+
 @media (max-width: 620px) {
   .versions {
     display: none;

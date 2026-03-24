@@ -14,6 +14,25 @@ function doAThing(): void {
   ipcHandlerBtn?.addEventListener('click', () => {
     window.electron.ipcRenderer.send('ping')
   })
+
+  const dbSetBtn = document.getElementById('db-set')
+  const dbGetBtn = document.getElementById('db-get')
+  const dbResult = document.getElementById('db-result')
+
+  dbSetBtn?.addEventListener('click', async () => {
+    const key = (document.getElementById('db-key') as HTMLInputElement).value.trim()
+    const value = (document.getElementById('db-value') as HTMLInputElement).value.trim()
+    if (!key) return
+    await window.electron.ipcRenderer.invoke('db:set', key, value)
+    if (dbResult) dbResult.textContent = `Saved "${key}" = "${value}"`
+  })
+
+  dbGetBtn?.addEventListener('click', async () => {
+    const key = (document.getElementById('db-key') as HTMLInputElement).value.trim()
+    if (!key) return
+    const row = await window.electron.ipcRenderer.invoke('db:get', key)
+    if (dbResult) dbResult.textContent = row ? `"${key}" = "${row.value}"` : `No entry found for "${key}"`
+  })
 }
 
 function replaceText(selector: string, text: string): void {
