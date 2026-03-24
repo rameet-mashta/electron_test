@@ -3,11 +3,11 @@ name: Release (Production)
 on:
   push:
     tags:
-      - 'v[0-9]*.[0-9]*.[0-9]*'
+      - 'v*'
+      - '!v*-staging'
 
 jobs:
   build:
-    if: ${{ !contains(github.ref_name, '-') }}
     runs-on: windows-latest
     environment: production
 

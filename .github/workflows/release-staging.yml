@@ -3,7 +3,7 @@ name: Release (Staging)
 on:
   push:
     tags:
-      - 'v*-*'
+      - 'v*-staging'
 
 jobs:
   build:
